@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="text-center">
+            {% if user.profile_image %}
+            <img width="150px" height="150px" src="{{ user.profile_image }}" class="img-thumbnail rounded-circle">
+            {% else %}
+            <img width="150px" height="150px" src="{{ url_for('static', filename='img/user.png') }}" class="img-thrumbnail rounded-circle">
+            {% endif %}
+            <h3>
+                {{ user.name }}
+            </h3>
+            
+            <p>
+                {% if user.bio %}
+                {{ user.bio }}
+                {% else %}
+                Hello everyone, I am new here!
+                {% endif %}
+            </p>
+        </div>
+    </div>   
+</div>
+
+
+    <br/>
+    <p class="text-muted text-center">
+    Party I'm going :)
+</p>
+    <br/>
+    <br/>
+
+    {% if parties and parties.pages > 0 %}
+    <div class="row">
+    {% for party in parties.items %}
+    <div class="col-md-6 party-item">
+        <div class="card">
+            {% if party.party_photo %}
+            <img class="card-img-top party-photo-item" src="{{ party.party_photo}}" width="535" height = "315">
+            {% else %}
+            <img class="card-img-top party-photo-item" src="{{ url_for('static', filename='img/party.jpg')}}" width = "535" height = "315">
+            {% endif %}
+            <div class="card-block">
+                <h4 class="card-title">
+                    {{ party.name }}
+                </h4>
+                <p class="card-text">
+                    {{ party.description[:150] }}
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                    <a href="http://maps.google.com?q={{ party.place }}" target="_blank">
+                    {{ party.place }}
+                    </a>
+                    <br>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    {{ party.start_datetime.strftime("%Y-%m-%d %I:%M%p") }}
+                    <br>
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                    {{ party.attendees|length }} attending
+                </p>
+
+                {% if party.cancel %}
+                <button class="btn btn-danger">
+                    Canceled
+                </button>
+                {% elif user and party.host == user.id %}
+                <a href="{{ url_for('party_page.edit', id=party.id) }}" class="btn btn-success">
+                    Edit
+                </a>
+                {% endif %}
+                <a href="{{ url_for('party_page.public', id=party.id) }}" class="btn btn-success">
+                    More
+                </a>
+            </div>
+        </div>
+    </div>
+        <br/>
+        <br/>
+    {% endfor %}
+</div>
+
+    <br/>
+    <br/>
+    <br/>
+
+
+<div class="row justify-content-center">
+    <ul class="pagination">
+        {% if parties.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('user_page.profile',
+                                       id=user.id,page=parties.prev_num) }}">
+                <span>&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+        <li class="page-item">
+            <p class="page-link">
+                Page {{ parties.page }} of {{ parties.pages }}
+            </p>
+        </li>
+        {% if parties.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('user_page.profile',
+                                       id=user.id,page=parties.next_num) }}">
+                <span>&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+    {% else %}
+        <p align = "center">You have not joined any party :( </p>
+    {% endif %}
+ <link rel = "stylesheet" href = "{{ url_for('static',filename = 'css/style.css') }}"/>
+{% endblock %}

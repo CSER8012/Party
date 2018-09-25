@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Explore{% endblock %}
+{% block content %}
+
+<div class="jumbotron text-center">
+    <div class="container">
+        <h1 class="jumbotron-heading">
+            Find a Party
+        </h1>
+        <p class="lead text-muted">
+            If you want to go fast, go alone, If you want to go far, go together.
+        </p>
+
+        {% from "_formhelpers.html" import render_field %}
+        <form method="POST" action="{{ url_for('party_page.explore') }}">
+                {{ form.csrf_token }}
+            {{ render_field(form.keyword, class="form-control") }}
+                <button type="submit" class="btn btn-success">
+                Go
+               </button>
+        </form>
+    </div>
+    
+</div>
+
+{% if parties and parties.pages > 0 %}
+<p class="text-muted text-center">
+    Party you may want ... {{ place }}
+</p>
+
+<br/>
+    <br/>
+<div class="row">
+    {% for party in parties.items %}
+    <div class="col-md-6 party-item">
+        <div class="card">
+            <a href="{{ url_for('party_page.public', id=party.id) }}" target="_blank">
+            {% if party.party_photo %}
+            <img class="card-img-top party-photo-item" src="{{ party.party_photo}}" width="535" height = "315">
+            {% else %}
+            <img class="card-img-top party-photo-item" src="{{ url_for('static', filename='img/party.jpg')}}" width="535" height = "315">
+            {% endif %}
+            </a>
+            <div class="card-block">
+                <h4 class="card-title">
+                    {{ party.name }}
+                </h4>
+                <p class="card-text">
+                    {{ party.description[:150] }}
+                </p>
+                <p class="card-text">
+                    <i class="fa fa-map-marker" aria-hidden="true"></i>
+                    <a href="http://maps.google.com?q={{ party.place }}" target="_blank">
+                    {{ party.place }}
+                    </a>
+                    <br>
+                    <i class="fa fa-clock-o" aria-hidden="true"></i>
+                    {{ party.start_datetime.strftime("%Y-%m-%d %I:%M%p") }} 
+                    <br>
+                    <i class="fa fa-users" aria-hidden="true"></i>
+                    {{ party.attendees|length }} attending
+                </p>
+
+                {% if party.cancel %}
+                <button class="btn btn-danger">
+                    Canceled
+                </button>
+                {% elif user and party.host == user.id %}
+                <a href="{{ url_for('party_page.edit', id=party.id) }}" class="btn btn-success">
+                    Edit
+                </a>
+                {% endif %}
+                <a href="{{ url_for('party_page.public', id=party.id) }}" class="btn btn-success">
+                    More
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+    <br/>
+    <br/>
+    <br/>
+
+<div class="row justify-content-center">
+    <ul class="pagination">
+        {% if parties.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('party_page.explore',
+                                       page = parties.prev_num, keyword = keyword) }}">
+                <span>&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+        <li class="page-item">
+            <p class="page-link">
+                Page {{ parties.page }} of {{ parties.pages }}
+            </p>        
+        </li>
+        {% if parties.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('party_page.explore', 
+                                       page = parties.next_num, keyword = keyword) }}">
+                <span>&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+
+</div>
+{% else %}
+<p class="text-muted text-center">
+    We couldn't find any parties here :(
+</p>
+{% endif %}
+<link rel = "stylesheet" href = "{{ url_for('static',filename = 'css/style.css') }}"/>
+{% endblock %}
+{% block javascript %}
+{% endblock %}
