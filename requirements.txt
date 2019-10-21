@@ -28,5 +28,5 @@ six==1.11.0
 storage==0.0.4.3
 urllib3==1.23
 virtualenv==16.0.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 WTForms==2.2.1
