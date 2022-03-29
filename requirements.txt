@@ -18,7 +18,7 @@ Jinja2==2.10
 MarkupSafe==1.0
 mock==2.0.0
 mongoengine==0.15.3
-paramiko==2.4.1
+paramiko==2.10.1
 pbr==4.2.0
 pyasn1==0.4.4
 pycparser==2.18
